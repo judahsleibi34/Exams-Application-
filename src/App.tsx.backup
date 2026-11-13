@@ -1,0 +1,468 @@
+import { useState } from "react";
+import {
+  BookOpen,
+  ArrowRight,
+  ClipboardList,
+  Award,
+  RotateCcw,
+  CheckCircle2,
+} from "lucide-react";
+import "./App.css";
+
+type Question = {
+  id: number;
+  topic: string;
+  title: string;
+  options: string[];
+  correct: number;
+};
+
+const questions: Question[] = [
+  {
+    id: 1,
+    topic: "HTML",
+    title: "What does HTML stand for?",
+    options: [
+      "Hyper Text Markup Language",
+      "High Text Machine Language",
+      "Hyperlink Markup Language",
+      "Home Tool Markup Language",
+    ],
+    correct: 0,
+  },
+  {
+    id: 2,
+    topic: "CSS",
+    title: "Which property changes the text color?",
+    options: ["font-size", "color", "background", "display"],
+    correct: 1,
+  },
+  {
+    id: 3,
+    topic: "JavaScript",
+    title: "Which keyword declares a constant?",
+    options: ["var", "let", "const", "static"],
+    correct: 2,
+  },
+  {
+    id: 4,
+    topic: "React",
+    title: "Which hook manages local state in React?",
+    options: ["useEffect", "useState", "useRef", "useMemo"],
+    correct: 1,
+  },
+  {
+    id: 5,
+    topic: "TypeScript",
+    title: "What does TypeScript add to JavaScript?",
+    options: [
+      "A database",
+      "CSS support",
+      "Static typing",
+      "A web server",
+    ],
+    correct: 2,
+  },
+  {
+    id: 6,
+    topic: "Rust",
+    title: "Which system helps Rust ensure memory safety?",
+    options: [
+      "Garbage collection",
+      "Ownership and borrowing",
+      "Dynamic variables",
+      "Manual memory allocation only",
+    ],
+    correct: 1,
+  },
+  {
+    id: 7,
+    topic: "Tauri",
+    title: "What language is used for Tauri's native core?",
+    options: ["Python", "Java", "Rust", "PHP"],
+    correct: 2,
+  },
+  {
+    id: 8,
+    topic: "Frontend",
+    title: "Which input is best for selecting one MCQ answer?",
+    options: ["Checkbox", "Radio", "Text", "File"],
+    correct: 1,
+  },
+  {
+    id: 9,
+    topic: "React",
+    title: "What is JSX?",
+    options: [
+      "A database language",
+      "A CSS framework",
+      "A syntax extension for JavaScript",
+      "A desktop operating system",
+    ],
+    correct: 2,
+  },
+  {
+    id: 10,
+    topic: "Vite",
+    title: "What is Vite primarily used for?",
+    options: [
+      "Frontend development and builds",
+      "Database administration",
+      "Operating system development",
+      "Network routing",
+    ],
+    correct: 0,
+  },
+];
+
+type Page = "landing" | "exam" | "results";
+
+export default function App() {
+  const [page, setPage] = useState<Page>("landing");
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+
+  const answered = questions.filter(
+    (q) => answers[q.id] !== undefined
+  ).length;
+
+  const score = questions.filter(
+    (q) => answers[q.id] === q.correct
+  ).length;
+
+  function startExam() {
+    setAnswers({});
+    setPage("exam");
+    window.scrollTo(0, 0);
+  }
+
+  function submitExam() {
+    const missing = questions.length - answered;
+
+    if (missing > 0) {
+      const confirmed = window.confirm(
+        `You have ${missing} unanswered question(s). Submit anyway?`
+      );
+
+      if (!confirmed) return;
+    }
+
+    setPage("results");
+    window.scrollTo(0, 0);
+  }
+
+  return (
+    <div className="min-h-screen bg-[#f4f6fb]">
+
+      {/* HEADER */}
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-indigo-600 p-3 text-white">
+              <BookOpen size={23} />
+            </div>
+
+            <div>
+              <h1 className="text-xl font-extrabold">
+                Sarabta <span className="text-indigo-600">Exam</span>
+              </h1>
+              <p className="text-xs text-slate-400">
+                Desktop Examination Platform
+              </p>
+            </div>
+          </div>
+
+          <span className="rounded-full bg-indigo-50 px-4 py-2 text-xs font-bold text-indigo-600">
+            {page === "exam"
+              ? "Exam in Progress"
+              : page === "results"
+              ? "Exam Completed"
+              : "Ready to Start"}
+          </span>
+        </div>
+      </header>
+
+      {/* LANDING PAGE */}
+      {page === "landing" && (
+        <main className="mx-auto grid max-w-7xl gap-8 px-8 py-16 lg:grid-cols-2">
+
+          <section className="flex flex-col justify-center rounded-3xl bg-[#202f58] p-12 text-white shadow-xl">
+            <span className="mb-6 w-fit rounded-full bg-white/10 px-4 py-2 text-sm">
+              Welcome to Sarabta
+            </span>
+
+            <h2 className="text-5xl font-extrabold leading-tight">
+              Your Exam.
+              <br />
+              Your Progress.
+              <br />
+              <span className="text-indigo-300">Your Success.</span>
+            </h2>
+
+            <p className="mt-6 max-w-md leading-7 text-slate-300">
+              A modern desktop examination experience.
+              Answer multiple-choice questions, submit
+              your responses, and receive instant results.
+            </p>
+
+            <button
+              onClick={startExam}
+              className="mt-10 flex w-fit items-center gap-3 rounded-xl bg-white px-8 py-4 font-bold text-indigo-700 hover:bg-indigo-100"
+            >
+              Start Exam
+              <ArrowRight size={20} />
+            </button>
+          </section>
+
+          <section className="rounded-3xl border border-slate-200 bg-white p-12 shadow-sm">
+            <div className="mb-6 w-fit rounded-2xl bg-indigo-50 p-4 text-indigo-600">
+              <ClipboardList size={30} />
+            </div>
+
+            <h3 className="text-3xl font-extrabold">
+              Exam Overview
+            </h3>
+
+            <p className="mt-4 text-slate-500">
+              Frontend Development Fundamentals
+            </p>
+
+            <div className="mt-10 grid grid-cols-2 gap-4">
+              <div className="rounded-2xl bg-slate-50 p-6">
+                <p className="text-4xl font-extrabold text-indigo-600">
+                  10
+                </p>
+                <p className="mt-2 text-sm text-slate-500">
+                  Questions
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-slate-50 p-6">
+                <p className="text-4xl font-extrabold text-indigo-600">
+                  MCQ
+                </p>
+                <p className="mt-2 text-sm text-slate-500">
+                  Question Format
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10 space-y-4 text-sm text-slate-600">
+              <p>✓ All questions displayed on one page</p>
+              <p>✓ Choose one answer per question</p>
+              <p>✓ Instant results after submission</p>
+              <p>✓ Works locally without a backend</p>
+            </div>
+          </section>
+        </main>
+      )}
+
+      {/* EXAM PAGE */}
+      {page === "exam" && (
+        <main className="mx-auto max-w-7xl px-8 py-10">
+
+          <div className="mb-8">
+            <h2 className="text-3xl font-extrabold">
+              Frontend Development Exam
+            </h2>
+            <p className="mt-2 text-slate-500">
+              Select the correct answer for each question.
+            </p>
+          </div>
+
+          <div className="grid items-start gap-7 lg:grid-cols-[1fr_280px]">
+
+            {/* QUESTIONS */}
+            <div className="space-y-5">
+              {questions.map((question) => (
+                <section
+                  key={question.id}
+                  id={`question-${question.id}`}
+                  className="scroll-mt-28 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm"
+                >
+                  <div className="mb-5 flex items-center justify-between">
+                    <span className="rounded-lg bg-indigo-50 px-4 py-2 text-xs font-bold text-indigo-600">
+                      QUESTION {question.id}
+                    </span>
+
+                    <span className="text-xs text-slate-400">
+                      {question.topic}
+                    </span>
+                  </div>
+
+                  <fieldset>
+                    <legend className="mb-6 text-lg font-bold">
+                      {question.title}
+                    </legend>
+
+                    <div className="space-y-3">
+                      {question.options.map((option, index) => (
+                        <label
+                          key={index}
+                          className={`flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition ${
+                            answers[question.id] === index
+                              ? "border-indigo-500 bg-indigo-50"
+                              : "border-slate-200 hover:bg-slate-50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`question-${question.id}`}
+                            checked={answers[question.id] === index}
+                            onChange={() =>
+                              setAnswers((previous) => ({
+                                ...previous,
+                                [question.id]: index,
+                              }))
+                            }
+                            className="accent-indigo-600"
+                          />
+
+                          <span className="text-sm font-medium">
+                            {String.fromCharCode(65 + index)}. {option}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                </section>
+              ))}
+
+              <button
+                onClick={submitExam}
+                className="flex w-full items-center justify-center gap-3 rounded-xl bg-indigo-600 px-8 py-4 font-bold text-white hover:bg-indigo-700"
+              >
+                Submit Exam
+                <ArrowRight size={20} />
+              </button>
+            </div>
+
+            {/* PROGRESS SIDEBAR */}
+            <aside className="sticky top-28 rounded-2xl border border-slate-200 bg-white p-7 shadow-sm">
+              <h3 className="text-lg font-extrabold">
+                Exam Progress
+              </h3>
+
+              <p className="mt-5 text-3xl font-extrabold text-indigo-600">
+                {answered} / 10
+              </p>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Questions answered
+              </p>
+
+              <div className="mt-5 h-3 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full bg-indigo-600 transition-all"
+                  style={{ width: `${answered * 10}%` }}
+                />
+              </div>
+
+              <div className="mt-7 grid grid-cols-5 gap-2">
+                {questions.map((question) => (
+                  <button
+                    key={question.id}
+                    onClick={() =>
+                      document
+                        .getElementById(`question-${question.id}`)
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                    className={`rounded-lg p-3 text-xs font-bold ${
+                      answers[question.id] !== undefined
+                        ? "bg-indigo-600 text-white"
+                        : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {question.id}
+                  </button>
+                ))}
+              </div>
+            </aside>
+          </div>
+        </main>
+      )}
+
+      {/* RESULTS PAGE */}
+      {page === "results" && (
+        <main className="mx-auto max-w-4xl px-8 py-12">
+
+          <div className="rounded-3xl bg-white p-12 text-center shadow-sm">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-50 text-indigo-600">
+              <Award size={40} />
+            </div>
+
+            <h2 className="text-3xl font-extrabold">
+              Exam Completed!
+            </h2>
+
+            <p className="mt-3 text-slate-500">
+              Here is your final result.
+            </p>
+
+            <p className="mt-8 text-6xl font-extrabold text-indigo-600">
+              {score} / 10
+            </p>
+
+            <p className="mt-3 text-xl font-bold">
+              {score * 10}% Correct
+            </p>
+
+            <button
+              onClick={startExam}
+              className="mt-8 inline-flex items-center gap-3 rounded-xl bg-indigo-600 px-8 py-4 font-bold text-white hover:bg-indigo-700"
+            >
+              <RotateCcw size={18} />
+              Retake Exam
+            </button>
+          </div>
+
+          <h3 className="mb-5 mt-10 text-2xl font-extrabold">
+            Answer Review
+          </h3>
+
+          <div className="space-y-4">
+            {questions.map((question) => {
+              const correct =
+                answers[question.id] === question.correct;
+
+              return (
+                <div
+                  key={question.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-6"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h4 className="font-bold">
+                      {question.id}. {question.title}
+                    </h4>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${
+                        correct
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {correct ? "Correct" : "Incorrect"}
+                    </span>
+                  </div>
+
+                  <p className="mt-4 text-sm text-slate-500">
+                    Your answer:{" "}
+                    {answers[question.id] === undefined
+                      ? "Not answered"
+                      : question.options[answers[question.id]]}
+                  </p>
+
+                  <p className="mt-2 flex items-center gap-2 text-sm text-green-700">
+                    <CheckCircle2 size={16} />
+                    Correct answer:{" "}
+                    {question.options[question.correct]}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </main>
+      )}
+    </div>
+  );
+}
